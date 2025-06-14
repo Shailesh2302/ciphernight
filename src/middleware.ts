@@ -3,9 +3,12 @@ import { getToken } from "next-auth/jwt";
 export { default } from "next-auth/middleware";
 
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request });
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET, // Make sure this is set
+  });
   const url = request.nextUrl;
-
+  console.log("Token:", !!token, "Path:", url.pathname);
   // If user is authenticated and tries to access auth pages, redirect to dashboard
   if (
     token &&
@@ -15,7 +18,7 @@ export async function middleware(request: NextRequest) {
   ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
-
+  console.log("Token:", !!token, "Path:", url.pathname);
   // Allow authenticated users to access verification pages
   if (token && url.pathname.startsWith("/verify")) {
     return NextResponse.next();
@@ -25,7 +28,7 @@ export async function middleware(request: NextRequest) {
   if (!token && url.pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/", request.url));
   }
-
+  console.log("Token:", !!token, "Path:", url.pathname);
   return NextResponse.next();
 }
 
