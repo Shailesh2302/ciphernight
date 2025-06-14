@@ -39,7 +39,7 @@ function UserDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [baseUrl, setBaseUrl] = useState('');
+  const [baseUrl, setBaseUrl] = useState("");
 
   const handleDeleteMessage = (messageId: string) => {
     setMessages(messages.filter((message) => message._id !== messageId));
@@ -56,10 +56,15 @@ function UserDashboard() {
 
   // Set base URL on client side to avoid SSR issues
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       setBaseUrl(`${window.location.protocol}//${window.location.host}`);
     }
   }, []);
+
+  // In your dashboard component, add this useEffect:
+  useEffect(() => {
+    console.log("Dashboard - Session status:", status, "Session:", !!session);
+  }, [session, status]);
 
   const fetchAcceptMessages = useCallback(async () => {
     setIsSwitchLoading(true);
@@ -78,29 +83,26 @@ function UserDashboard() {
     }
   }, [setValue]);
 
-  const fetchMessages = useCallback(
-    async (refresh: boolean = false) => {
-      setIsLoading(true);
-      try {
-        const response = await axios.get<ApiResponse>("/api/get-messages");
-        setMessages(response.data.messages || []);
-        if (refresh) {
-          toast.success("Messages Refreshed", {
-            description: "Showing latest messages",
-          });
-        }
-      } catch (error) {
-        const axiosError = error as AxiosError<ApiResponse>;
-        toast.error("Error", {
-          description:
-            axiosError.response?.data.message ?? "Failed to fetch messages",
+  const fetchMessages = useCallback(async (refresh: boolean = false) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get<ApiResponse>("/api/get-messages");
+      setMessages(response.data.messages || []);
+      if (refresh) {
+        toast.success("Messages Refreshed", {
+          description: "Showing latest messages",
         });
-      } finally {
-        setIsLoading(false);
       }
-    },
-    []
-  );
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error("Error", {
+        description:
+          axiosError.response?.data.message ?? "Failed to fetch messages",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!session || !session.user) return;
@@ -134,7 +136,8 @@ function UserDashboard() {
   const recentMessages = useMemo(() => {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    return messages.filter(msg => new Date(msg.createdAt) >= oneWeekAgo).length;
+    return messages.filter((msg) => new Date(msg.createdAt) >= oneWeekAgo)
+      .length;
   }, [messages]);
 
   const totalMessages = messages.length;
@@ -159,7 +162,7 @@ function UserDashboard() {
             <p className="text-slate-50 leading-relaxed text-lg font-medium">
               Sign in to access your dashboard and manage anonymous messages
             </p>
-            <Link href="/sign-in">
+            <Link href="/login">
               <Button className="w-full h-12 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white border-0 shadow-xl shadow-purple-500/25 text-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/40">
                 <LogIn className="w-5 h-5 mr-3" />
                 Sign In to Continue
@@ -178,7 +181,9 @@ function UserDashboard() {
         <Card className="w-full max-w-md text-center shadow-2xl border border-white/20 bg-slate-800/90 backdrop-blur-2xl">
           <CardContent className="p-8">
             <h2 className="text-2xl font-bold text-white mb-4">Error</h2>
-            <p className="text-slate-50 mb-6">Username not found. Please try signing in again.</p>
+            <p className="text-slate-50 mb-6">
+              Username not found. Please try signing in again.
+            </p>
             <Link href="/sign-in">
               <Button className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white">
                 Sign In Again
@@ -190,7 +195,7 @@ function UserDashboard() {
     );
   }
 
-  const profileUrl = baseUrl ? `${baseUrl}/u/${username}` : '';
+  const profileUrl = baseUrl ? `${baseUrl}/u/${username}` : "";
 
   const copyToClipboard = async () => {
     if (!profileUrl) {
@@ -389,7 +394,7 @@ function UserDashboard() {
                     onCheckedChange={handleSwitchChange}
                     disabled={isSwitchLoading}
                     className="data-[state=checked]:bg-gradient-to-r from-emerald-500 to-teal-500"
-                    aria-label={`${acceptMessages ? 'Disable' : 'Enable'} message acceptance`}
+                    aria-label={`${acceptMessages ? "Disable" : "Enable"} message acceptance`}
                   />
                 </div>
 
