@@ -162,7 +162,7 @@ function UserDashboard() {
             <p className="text-slate-50 leading-relaxed text-lg font-medium">
               Sign in to access your dashboard and manage anonymous messages
             </p>
-            <Link href="/login">
+            <Link href="/sign-in">
               <Button className="w-full h-12 bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 hover:from-purple-700 hover:via-violet-700 hover:to-indigo-700 text-white border-0 shadow-xl shadow-purple-500/25 text-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/40">
                 <LogIn className="w-5 h-5 mr-3" />
                 Sign In to Continue
