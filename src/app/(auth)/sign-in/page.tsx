@@ -38,9 +38,10 @@ const Page = () => {
   setIsSubmitting(true);
   try {
     const result = await signIn("credentials", {
-      identifier: data.identifier, // ✅ Use form data
-      password: data.password,     // ✅ Use form data
-      redirect: false,
+      identifier: data.identifier,
+      password: data.password,
+      callbackUrl: "/dashboard", // Add this to specify where to redirect
+      // Remove redirect: false to let NextAuth handle the redirect
     });
 
     if (result?.error) {
@@ -53,10 +54,8 @@ const Page = () => {
           description: result.error,
         });
       }
-    } else if (result?.ok) {
-      toast.success("Sign in successful!");
-      router.push("/dashboard");
     }
+    // Remove the else if block since NextAuth will handle the redirect
   } catch (error) {
     console.log(error)
     toast.error("Something went wrong", {
@@ -66,6 +65,7 @@ const Page = () => {
     setIsSubmitting(false);
   }
 };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 relative overflow-hidden">
       {/* Animated background elements */}
