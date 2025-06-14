@@ -1,33 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import dbConnect from "@/lib/dbConnect";
-import UserModel from "@/model/User";
+import { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcryptjs';
+import dbConnect from '@/lib/dbConnect';
+import UserModel from '@/model/User';
 
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
-      id: "credentials",
-      name: "Credentials",
+      id: 'credentials',
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        identifier: { label: 'Email or Username', type: 'text' },
+        password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials: any): Promise<any> {
         await dbConnect();
         try {
           const user = await UserModel.findOne({
             $or: [
-              { email: credentials.email }, // Fixed: use credentials.email
-              { username: credentials.email }, // Allow email field to match username too
+              { email: credentials.identifier }, // Fixed: use credentials.identifier
+              { username: credentials.identifier }, // Allow identifier to match username too
             ],
           });
           if (!user) {
-            throw new Error("No user found with this email");
+            throw new Error('No user found with this email');
           }
           if (!user.isVerified) {
-            throw new Error("Please verify your account before logging in");
+            throw new Error('Please verify your account before logging in');
           }
           const isPasswordCorrect = await bcrypt.compare(
             credentials.password,
@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
           if (isPasswordCorrect) {
             return user;
           } else {
-            throw new Error("Incorrect password");
+            throw new Error('Incorrect password');
           }
         } catch (err: any) {
           throw new Error(err);
@@ -65,7 +65,7 @@ export const authOptions: NextAuthOptions = {
     },
     // Add redirect callback to handle post-signin redirects
     async redirect({ url, baseUrl }) {
-      console.log("Redirect callback - url:", url, "baseUrl:", baseUrl);
+      console.log('Redirect callback - url:', url, 'baseUrl:', baseUrl);
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       // Allows callback URLs on the same origin
@@ -75,10 +75,10 @@ export const authOptions: NextAuthOptions = {
     },
   },
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/sign-in",
+    signIn: '/sign-in',
   },
 };
